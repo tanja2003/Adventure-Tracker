@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 //import "react-big-calendar/lib/css/react-big-calendar.css";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -7,29 +7,31 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { Modal, Button, Form } from "react-bootstrap";
 
 
-const initialEvents = [
-  {
-    id: 1,
-    title: "Meeting5",
-    start: new Date(2025, 8, 6, 10, 0),
-    end: new Date(2025, 8, 6, 11, 0),
-  },
-  {
-    id: 2,
-    title: "Arzttermin 7",
-    start: new Date(2025, 8, 8, 14, 0),
-    end: new Date(2025, 8, 8, 15, 0),
-  },
-];
+function formatForDateTimeLocal(value, isEnd) {
+  if (!value) return "";
+
+  const date = new Date(value);
+  let hours = date.getHours() 
+  if (isEnd) hours += 1
+
+  const pad = (n) => n.toString().padStart(2, "0");
+  return (
+    date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" +
+    pad(date.getDate()) + "T" + pad(hours) +":" +
+    pad(date.getMinutes()));
+}
 
 
 export default function CalendarPage() {
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [deleteEventModal, setDeleteEventModal] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newStart, setNewStart] = useState("");
   const [newEnd, setNewEnd] = useState("");
   const [clickedDate, setClickedDate] = useState(null);
+  const [selectedEventId, setSelectedEventId] = useState(null);
+  const calendarRef = useRef(null);
 
   useEffect(() => {
   fetch("http://localhost:5000/api/events")
@@ -44,6 +46,39 @@ export default function CalendarPage() {
       )
     );
 }, []);
+
+  const handleEventClick2 = (info) => {
+    console.log("yes event")
+    setSelectedEventId(info.event.id);
+    setDeleteEventModal(true)
+  }
+
+  const handleDelete = async () => {
+    try{
+      const res = await fetch(`http://localhost:5000/api/events/${selectedEventId}`, {
+      method: "DELETE",
+    });
+    console.log("in delete", selectedEventId)
+    if (res.ok) {
+      setEvents((prev) => prev.filter((event) => event.id !== selectedEventId));
+      setDeleteEventModal(false);
+      setSelectedEventId(null);
+      const calendarApi = calendarRef.current.getApi();
+      const event = calendarApi.getEventById(selectedEventId);
+      setEvents((prev) => prev.filter((event) => event.id !== selectedEventId));
+      setDeleteEventModal(false);
+      setSelectedEventId(null);
+      if (event) event.remove();
+    } else {
+      console.error("Fehler beim Loschen: ", await res.text())
+    };
+    //setEvents((prev) => prev.filter((event) => event.id !== selectedEventId));
+    
+    }
+    catch(err){
+      console.log("Fehler: ", err)
+    }  
+  };
 
 
 
@@ -89,6 +124,7 @@ const end   = newEnd;
 };
 
 
+
   const handleDateClick = (info) => {
     setClickedDate(info.dateStr);   // Basisdatum merken
     setNewStart(info.dateStr);
@@ -96,43 +132,19 @@ const end   = newEnd;
     setShowModal(true);             // Modal öffnen
   };
 
-
-
   const handleSave = () => {
     if (!newTitle) return;
     setEvents([
       ...events,
-      {
-        id: events.length + 1,
-        title: newTitle,
-        start: newStart,
-        end: newEnd,
-      },
+      {id: events.length + 1, title: newTitle, start: newStart, end: newEnd,},
     ]);
     setShowModal(false);
     setNewTitle("");
     setNewStart("");
     setNewEnd("");
     handleEventClick();
-    console.log("in handle Save 3: ", newTitle)
   };
 
-  function formatForDateTimeLocal(value) {
-  if (!value) return "";
-  const date = new Date(value);
-  const pad = (n) => n.toString().padStart(2, "0");
-  return (
-    date.getFullYear() +
-    "-" +
-    pad(date.getMonth() + 1) +
-    "-" +
-    pad(date.getDate()) +
-    "T" +
-    pad(date.getHours()) +
-    ":" +
-    pad(date.getMinutes())
-  );
-}
 
 
     
@@ -141,6 +153,7 @@ const end   = newEnd;
     <div style={{ height: "80vh", padding: "20px" }}>
       <h2>📅 Kalenderübersicht</h2>
       <FullCalendar
+       ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"   // Start = Wochenansicht
         headerToolbar={{
@@ -151,11 +164,12 @@ const end   = newEnd;
         events={
           events
         }
+        eventClick={handleEventClick2}
         dateClick={handleDateClick}
         //eventContent={renderEventContent}
         //views={CustomView}
       />
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal show={showModal} onHide={() => setShowModal(false) }>
         <Modal.Header closeButton>
           <Modal.Title>Neuen Termin hinzufügen</Modal.Title>
         </Modal.Header>
@@ -174,7 +188,7 @@ const end   = newEnd;
               <Form.Label>Startzeit</Form.Label>
               <Form.Control
                 type="datetime-local"
-                value={formatForDateTimeLocal(newStart)}
+                value={formatForDateTimeLocal(newStart, false)}
                 onChange={(e) => setNewStart(e.target.value)}
               />
             </Form.Group>
@@ -182,7 +196,7 @@ const end   = newEnd;
               <Form.Label>Endzeit</Form.Label>
               <Form.Control
                 type="datetime-local"
-                value={newEnd}
+                value={formatForDateTimeLocal(newEnd, true)}
                 onChange={(e) => setNewEnd(e.target.value)}
               />
             </Form.Group>
@@ -196,6 +210,23 @@ const end   = newEnd;
             Speichern
           </Button>
         </Modal.Footer>
+      </Modal>
+      <Modal show={deleteEventModal} onHide={() => setDeleteEventModal(false) }>
+          <Modal.Header closeButton>
+          <Modal.Title>Termin loschen oderhinzufügen</Modal.Title>
+        </Modal.Header>
+  <Modal.Body>
+    <Button 
+      variant="primary" 
+      onClick={() => handleDelete()}
+    >
+      Löschen
+    </Button>
+    <Button>
+      Neuer Termin hinzufügen
+    </Button>
+  </Modal.Body>
+
       </Modal>
     </div>
   );

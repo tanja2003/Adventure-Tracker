@@ -61,9 +61,9 @@ app.post('/api/todos', (req, res) => {
 });
 
 app.put('/api/todos/:id', (req, res) => {
-    const { title, description, done, due_date } = req.body;
-    db.run(`UPDATE todos SET title=?, description=?, done=?, due_date=? WHERE id=?`,
-        [title, description, done, due_date, req.params.id],
+    const { done } = req.body;
+    db.run(`UPDATE todos SET done=? WHERE id=?`,
+        [ done, req.params.id],
         function(err) {
             if(err) res.status(500).json({ error: err.message });
             else res.json({ updated: this.changes });
@@ -98,6 +98,13 @@ app.post('/api/events', (req, res) => {
       else res.json({ id: this.lastID });
     }
   );
+});
+
+app.delete('/api/events/:id', (req, res) => {
+    db.run(`DELETE FROM events WHERE id=?`, [req.params.id], function(err){
+        if(err) res.status(500).json({ error: err.message });
+        else res.json({ deleted: this.changes });
+    });
 });
 
 // Server starten
