@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, Popup, Tooltip, LayersControl, LayerGroup } from "react-leaflet";
 import L from "leaflet";
 import { useMap } from 'https://cdn.esm.sh/react-leaflet/hooks'
+import MarkerStoreModal from "./MarkerStoreModal";
 
 // Leaflet benötigt eigene Icon-URLs (sonst fehlen die Marker-Pins in vielen Bundlern)
 const defaultIcon = new L.Icon({
@@ -77,8 +78,8 @@ export default function WorldMapPlanner() {
 
       <main className="flex-1">
         <MapContainer
-          center={[20, 0]}
-          zoom={2}
+          center={[51, 10]}
+          zoom={6}
           minZoom={2}
           style={{ height: "70vh", width:"100vh" }}  
         >
@@ -111,14 +112,10 @@ export default function WorldMapPlanner() {
               onChange={() => {
                 animateRef.current = !animateRef.current
           }}/>
-
           <ClickHandler onAddPoint={addPoint} />
-
-          
-         
+          <MarkerStoreModal></MarkerStoreModal>
         </MapContainer>
       </main>
-
       <footer className="p-3 text-center text-sm text-gray-500 bg-white">Links-Klick: Punkt setzen · Rechts-Klick: letzten Punkt entfernen</footer>
     </div>
   );
