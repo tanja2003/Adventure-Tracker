@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 
-export default function MarkerStoreModal(){
+export default function MarkerStoreModal  ({show, onClose, lat, lng}) {
     const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("")
-    const [picture, setPictures] = useState(null)
+    const [description, setDescription] = useState("");
+    const [picture, setPictures] = useState(null);
+    const [showModal, setShowModal] = useState(true);
 
     const handleSubmit = async (e) => {
         console.log("in handleSubmit")
         e.preventDefault();
 
         const formData = new FormData();
+        
+        formData.append("title", title)
         formData.append("image", picture);
-
+        formData.append("description", description);
+        formData.append("lat", lat);
+        formData.append("lng", lng);
+        console.log("formData: ", formData)
         try {
           const res = await fetch("http://localhost:5000/api/markers", {
             method: "POST",
@@ -21,6 +27,7 @@ export default function MarkerStoreModal(){
       
           if (res.ok) {
             console.log("Upload erfolgreich!");
+            onClose()
           } else {
             console.error("Fehler:", await res.text());
           }
@@ -31,13 +38,13 @@ export default function MarkerStoreModal(){
 
     return (
         <div>
-            <Modal show={true}>
+            <Modal show={show} onHide={onClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Neue Reise eintragen</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
-                    <Form onSubmit={handleSubmit}>
+                    <Form>
                         <Form.Group className="mb-3">
                             <Form.Label>*Titel eingeben: </Form.Label>
                             <Form.Control type="text" placeholder="Titel eingeben"
@@ -53,15 +60,18 @@ export default function MarkerStoreModal(){
                             <Form.Control type="file" accept="image/*" placeholder="Bilder hochladen" 
                                 onChange={(e) => setPictures(e.target.files[0])}/>
                         </Form.Group>
+                        <Form.Group>
+                            <Form.Label>
+                                <b>Koordinaten:  {lat}, { lng} </b></Form.Label>
+                            
+                        </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => (false)}>
+                    <Button variant="secondary" onClick={onClose}>
                         Abbrechen
                     </Button>
-                    <Button variant="primary" onClick={true}>
-                        Speichern
-                    </Button>
+                    <Button variant="primary" onClick={handleSubmit}>Speichern</Button>
                 </Modal.Footer>
             </Modal>
         </div>

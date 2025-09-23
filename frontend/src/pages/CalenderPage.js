@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-//import "react-big-calendar/lib/css/react-big-calendar.css";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -11,14 +10,12 @@ function formatForDateTimeLocal(value, isEnd) {
   if (!value) return "";
 
   const date = new Date(value);
-  let hours = date.getHours() 
+  let hours = date.getHours(); 
   if (isEnd) hours += 1
 
   const pad = (n) => n.toString().padStart(2, "0");
-  return (
-    date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" +
-    pad(date.getDate()) + "T" + pad(hours) +":" +
-    pad(date.getMinutes()));
+  return (date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" +
+    pad(date.getDate()) + "T" + pad(hours) +":" + pad(date.getMinutes()));
 }
 
 

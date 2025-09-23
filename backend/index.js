@@ -1,11 +1,10 @@
 
-
-
-
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 const app = express();
 const PORT = 5000;
@@ -37,7 +36,15 @@ db.serialize(() => {
         start TEXT,
         end TEXT
     )`);
-});
+
+    db.run(`CREATE TABLE IF NOT EXISTS markers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        lat DOUBLE PRECISION NOT NULL,
+        lng DOUBLE PRECISION NOT NULL,
+        title VARCHAR(255),
+        description TEXT,
+        image_url TEXT) `);
+    });
 
 // API Endpoints
 
@@ -106,6 +113,33 @@ app.delete('/api/events/:id', (req, res) => {
         else res.json({ deleted: this.changes });
     });
 });
+
+// World map
+app.get('/api/markers', (req, res) => {
+    db.all('SELECT * FROM markers',[], (err, rows) => {
+        if(err) res.status(500).json({ error: err.message });
+        else res.json(rows);
+    });
+});
+
+app.post('/api/markers', upload.single("image"), (req, res) => {
+    //const {lat, lng, title, description, picture} = req.body
+    const {title, lat, lng, description} = req.body
+    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+    console.log("image_url", image_url)
+    console.log("title", title)
+    console.log("lat", lat)
+    console.log("lng", lng)
+    console.log("description", description)
+    db.run(
+        `INSERT INTO markers (lat, lng, title, description, image_url) VALUES (?, ?, ?, ?, ?)`,
+        [ lat, lng, title, description, image_url],
+        function (err) {
+            if (err) res.status(500).json({error: err.message});
+            else res.json({ id: this.lastID})
+        }
+    )
+})
 
 // Server starten
 app.listen(PORT, () => {
