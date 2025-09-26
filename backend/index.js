@@ -8,7 +8,7 @@ const upload = multer({ dest: "uploads/" });
 
 const app = express();
 const PORT = 5000;
-
+app.use("/uploads", express.static("uploads"));
 app.use(cors());
 //app.use(bodyParser.json());
 app.use(express.json());
@@ -131,12 +131,20 @@ app.post('/api/markers', upload.single("image"), (req, res) => {
     console.log("lat", lat)
     console.log("lng", lng)
     console.log("description", description)
+    console.log("\n")
     db.run(
         `INSERT INTO markers (lat, lng, title, description, image_url) VALUES (?, ?, ?, ?, ?)`,
         [ lat, lng, title, description, image_url],
         function (err) {
             if (err) res.status(500).json({error: err.message});
-            else res.json({ id: this.lastID})
+            else {res.json({
+          id: this.lastID,
+          title,
+          description,
+          lat,
+          lng,
+          image_url,
+        });}
         }
     )
 })
