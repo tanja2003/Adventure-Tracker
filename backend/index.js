@@ -26,7 +26,7 @@ db.serialize(() => {
         title TEXT NOT NULL,
         description TEXT,
         done INTEGER DEFAULT 0,
-        due_date TEXT
+        wheater TEXT
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS events (
@@ -56,10 +56,26 @@ app.get('/api/todos', (req, res) => {
     });
 });
 
+app.get('/api/todos/:filter', (req, res) => {
+  const filter = req.params.filter;
+  let query = "SELECT * FROM todos";
+  console.log("Filter: ", filter)
+
+  if (filter === "done") query = "SELECT * FROM todos WHERE done = true";
+  if (filter === "open") query = "SELECT * FROM todos WHERE done = false";
+
+  db.all(query, [], (err, rows) => {
+    if (err) res.status(500).json({ error: err.message });
+    else res.json(rows);
+  });
+});
+
+
 app.post('/api/todos', (req, res) => {
-    const { title, description, due_date } = req.body;
-    db.run(`INSERT INTO todos(title, description, due_date) VALUES (?, ?, ?)`,
-        [title, description, due_date],
+    const { title, description, wheater } = req.body;
+    console.log(req.body)
+    db.run(`INSERT INTO todos(title, description, wheater) VALUES (?, ?, ?)`,
+        [title, description, wheater],
         function(err) {
             if(err) res.status(500).json({ error: err.message });
             else res.json({ id: this.lastID });
