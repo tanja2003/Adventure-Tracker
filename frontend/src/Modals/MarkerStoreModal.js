@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 
-export default function MarkerStoreModal  ({show, onClose, lat, lng}) {
+export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [picture, setPictures] = useState(null);
@@ -26,8 +26,11 @@ export default function MarkerStoreModal  ({show, onClose, lat, lng}) {
           });
       
           if (res.ok) {
-            console.log("Upload erfolgreich!");
-            onClose()
+            const savedMarker = await res.json(); // ⬅️ hier bekommst du id, lat, lng, title, image_url
+            console.log("Upload erfolgreich!", savedMarker);
+            console.log("saved Marker", savedMarker);
+              onSave(savedMarker);
+            onClose();
           } else {
             console.error("Fehler:", await res.text());
           }

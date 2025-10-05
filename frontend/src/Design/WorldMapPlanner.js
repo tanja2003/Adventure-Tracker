@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Polyline, useMapEvents, Popup, Tooltip, LayersControl, LayerGroup } from "react-leaflet";
 import L, { marker } from "leaflet";
 import { useMap } from 'https://cdn.esm.sh/react-leaflet/hooks'
-import MarkerStoreModal from "./MarkerStoreModal";
+import MarkerStoreModal from "../Modals/MarkerStoreModal";
+import LightBoxModal from "../Modals/LightBoxModal";
 
 // Leaflet benötigt eigene Icon-URLs (sonst fehlen die Marker-Pins in vielen Bundlern)
 const defaultIcon = new L.Icon({
@@ -48,39 +49,34 @@ export default function WorldMapPlanner() {
   const [newMarker, setNewMarker] = useState({ lat: null, lng: null });
   const [markers, setMarkers] = useState([]); 
   const animateRef = useRef(false)
+  const [lightboxImage, setLightboxImage] = useState(null);
+
+
 
   useEffect(() => {
     const loadMarkers = async () => {
       const res = await fetch("http://localhost:5000/api/markers")
       const data = await res.json();
-      const coords = data.map(m => [Number(m.lat), Number(m.lng)]);
-      setPoints(coords);
-    // Marker-Objekte separat speichern, falls du Popups/Bilder brauchst
-    setMarkers(data.map(m => ({ ...m, lat: Number(m.lat), lng: Number(m.lng) })));
+      const markersWithNumbers = data.map(m => ({
+      ...m,
+      lat: Number(m.lat),
+      lng: Number(m.lng)
+    }));
+    setMarkers(markersWithNumbers);
     };
     loadMarkers();
   }, []);
 
   const addPoint = (latlng) => {
-    if (!latlng) {
-      // Rechtsklick -> letzten Punkt entfernen
-      setPoints((prev) => prev.slice(0, -1));
-      return;
-    }
-    console.log("latlng", latlng)
-     console.log("lat", latlng[0], "; lng", latlng[1]); 
-    const lat = latlng[0].toFixed(6);
-    const lng = latlng[1].toFixed(6);
-    setNewMarker({ lat, lng });
+    const lat = Math.round(latlng[0] * 1e6) / 1e6;
+    const lng = Math.round(latlng[1] * 1e6) / 1e6;
 
-    // sofort verwenden:
-    console.log("lat", lat, "lng", lng);
-    setPoints((prev) => [...prev, latlng]);
+    setNewMarker({ lat, lng });
     setOpenMarkerStoreModal(true); 
   };
 
-  const clearAll = () => setPoints([]);
-  const undo = () => setPoints((prev) => prev.slice(0, -1));
+  const clearAll = () => setMarkers([]);
+  const undo = () => setMarkers((prev) => prev.slice(0, -1));
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -96,25 +92,41 @@ export default function WorldMapPlanner() {
       
 
       <main className="flex-1">
-        <MapContainer center={[51, 10]} zoom={6} minZoom={2}
+        <MapContainer center={[48.5, 9]} zoom={8} minZoom={2}
           style={{ height: "70vh", width:"100vh" }} >
           <LayersControl position="topright">
             <LayersControl.Overlay checked name="Marker with popup">
               <LayerGroup>
-                {points.map((pos, idx) => (
-                  <Marker key={idx} position={pos}>
+                {markers.map((marker, idx) => (
+                  <Marker key={marker.id ?? idx} position={[Number(marker.lat), Number(marker.lng)]}
+                   eventHandlers={{
+                    contextmenu: () => { // delete marker
+                      setMarkers(prev => prev.filter(m => m.id !== marker.id));
+                    }
+                  }}>
                     <Popup>
-                      📍 Punkt {idx + 1}<br />
-                      Koordinaten: {pos[0].toFixed(3)}, {pos[1].toFixed(3)}
+                      <h4>{marker.title}</h4>
+                      <p>{marker.description}</p>
+                      {marker.image_url && (
+                        <img
+                          src={`http://localhost:5000${marker.image_url}`}
+                          alt={marker.title}
+                          style={{ width: "200px", height: "auto" }}
+                          onClick={() => setLightboxImage(`http://localhost:5000${marker.image_url}`)}
+                        />
+                      )}
                     </Popup>
-                    <Tooltip>Tooltip for Marker</Tooltip>
+                    <Tooltip>{marker.title}</Tooltip>
                   </Marker>
                 ))}
+
               </LayerGroup>
             </LayersControl.Overlay>
+
             <LayersControl.Overlay checked name="Polylines">
-              {points.length > 1 && (
-            <Polyline positions={points} />
+              {markers.length > 1 && (
+            <Polyline positions={markers.map(m => [m.lat, m.lng])} />
+
           )}
             </LayersControl.Overlay>
           </LayersControl>
@@ -128,10 +140,21 @@ export default function WorldMapPlanner() {
                 animateRef.current = !animateRef.current
           }}/>
           <ClickHandler onAddPoint={addPoint} />
-          <MarkerStoreModal show={openMarkerStoreModal} onClose={() => setOpenMarkerStoreModal(false)} 
+          <MarkerStoreModal show={openMarkerStoreModal} 
+            onClose={() => {
+              setOpenMarkerStoreModal(false); }} 
             lat={newMarker.lat}
             lng={newMarker.lng}
+            onSave={(savedMarker) => {
+              setMarkers((prev) => [...prev, savedMarker]); 
+              setOpenMarkerStoreModal(false);
+            }}
+           
             ></MarkerStoreModal>
+            <LightBoxModal
+              src={lightboxImage}
+              onClose={() => setLightboxImage(null)}
+            />
         </MapContainer>
       </main>
       <footer className="p-3 text-center text-sm text-gray-500 bg-white">Links-Klick: Punkt setzen · Rechts-Klick: letzten Punkt entfernen</footer>
