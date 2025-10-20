@@ -45,6 +45,7 @@ db.serialize(() => {
         description TEXT,
         image_url TEXT) `);
     });
+    
 
 // API Endpoints
 
@@ -83,13 +84,31 @@ app.post('/api/todos', (req, res) => {
     );
 });
 
+app.put('/api/markers/:id', (req, res) => {
+    const {description} = req.body;
+    console.log("In markers, id", description, req.params.id)
+    db.run(`UPDATE markers set description=? WHERE id=?`,
+        [description, req.params.id],
+        function(err){
+            if(err) res.status(500).json({error: err.message});
+            else {
+                res.json({ updated: this.changes });
+                console.log("Erfolg")
+            }
+        }
+    )
+})
+
 app.put('/api/todos/:id', (req, res) => {
     const { done } = req.body;
     db.run(`UPDATE todos SET done=? WHERE id=?`,
         [ done, req.params.id],
         function(err) {
             if(err) res.status(500).json({ error: err.message });
-            else res.json({ updated: this.changes });
+            else {
+                res.json({ updated: this.changes });
+                console.log("Erfolg")
+            }
         }
     );
 });
