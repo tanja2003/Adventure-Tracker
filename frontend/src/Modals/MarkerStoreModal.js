@@ -4,21 +4,20 @@ import { Button, Modal, Form } from "react-bootstrap";
 export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [picture, setPictures] = useState(null);
-    const [showModal, setShowModal] = useState(true);
+    const [picture, setPictures] = useState([]);
 
     const handleSubmit = async (e) => {
         console.log("in handleSubmit")
         e.preventDefault();
 
         const formData = new FormData();
-        
         formData.append("title", title)
-        formData.append("image", picture);
         formData.append("description", description);
         formData.append("lat", lat);
         formData.append("lng", lng);
-        console.log("formData: ", formData)
+        picture.forEach((file) => {
+            formData.append("images", file);
+        });
         try {
           const res = await fetch("http://localhost:5000/api/markers", {
             method: "POST",
@@ -26,10 +25,8 @@ export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
           });
       
           if (res.ok) {
-            const savedMarker = await res.json(); // ⬅️ hier bekommst du id, lat, lng, title, image_url
-            console.log("Upload erfolgreich!", savedMarker);
-            console.log("saved Marker", savedMarker);
-              onSave(savedMarker);
+            const savedMarker = await res.json(); 
+            onSave(savedMarker);
             onClose();
           } else {
             console.error("Fehler:", await res.text());
@@ -60,8 +57,46 @@ export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Bilder hochladen:</Form.Label>
-                            <Form.Control type="file" accept="image/*" placeholder="Bilder hochladen" 
-                                onChange={(e) => setPictures(e.target.files[0])}/>
+                            <Form.Control type="file" multiple accept="image/*" placeholder="Bilder hochladen" 
+                                onChange={(e) => setPictures((prev) => [...prev, ...Array.from(e.target.files)])}/>
+                            {picture.length > 0 && (
+                                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "10px" }}>
+                                    {picture.map((pic, i) => (
+                                    <div key={i} style={{ position: "relative" }}>
+                                        <img
+                                            src={URL.createObjectURL(pic)}
+                                            alt={`Bild ${i}`}
+                                            style={{
+                                            width: "100px",
+                                            height: "100px",
+                                            objectFit: "cover",
+                                            borderRadius: "8px",
+                                            }}
+                                        />
+                                        <button
+                                            onClick={() =>
+                                            setPictures((prev) => prev.filter((_, index) => index !== i))
+                                            }
+                                            style={{
+                                            position: "absolute",
+                                            top: "4px",
+                                            right: "4px",
+                                            background: "rgba(0,0,0,0.6)",
+                                            color: "white",
+                                            border: "none",
+                                            borderRadius: "50%",
+                                            width: "20px",
+                                            height: "20px",
+                                            cursor: "pointer",
+                                            lineHeight: "20px",
+                                            }}>
+                                            ×
+                                        </button>
+                                        </div>
+
+                                    ))}
+                                </div>
+                                )}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>

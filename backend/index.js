@@ -9,6 +9,7 @@ const upload = multer({ dest: "uploads/" });
 const app = express();
 const PORT = 5000;
 app.use("/uploads", express.static("uploads"));
+
 app.use(cors());
 //app.use(bodyParser.json());
 app.use(express.json());
@@ -42,10 +43,16 @@ db.serialize(() => {
         lat DOUBLE PRECISION NOT NULL,
         lng DOUBLE PRECISION NOT NULL,
         title VARCHAR(255),
-        description TEXT,
-        image_url TEXT) `);
-    });
+        description TEXT) `);
     
+
+    db.run(`CREATE TABLE IF NOT EXISTS marker_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        marker_id INTEGER NOT NULL,
+        image_url TEXT NOT NULL,
+        FOREIGN KEY(marker_id) REFERENCES markers(id)
+        );
+`)});
 
 // API Endpoints
 
@@ -84,20 +91,6 @@ app.post('/api/todos', (req, res) => {
     );
 });
 
-app.put('/api/markers/:id', (req, res) => {
-    const {description} = req.body;
-    console.log("In markers, id", description, req.params.id)
-    db.run(`UPDATE markers set description=? WHERE id=?`,
-        [description, req.params.id],
-        function(err){
-            if(err) res.status(500).json({error: err.message});
-            else {
-                res.json({ updated: this.changes });
-                console.log("Erfolg")
-            }
-        }
-    )
-})
 
 app.put('/api/todos/:id', (req, res) => {
     const { done } = req.body;
@@ -151,35 +144,71 @@ app.delete('/api/events/:id', (req, res) => {
 
 // World map
 app.get('/api/markers', (req, res) => {
-    db.all('SELECT * FROM markers',[], (err, rows) => {
-        if(err) res.status(500).json({ error: err.message });
-        else res.json(rows);
-    });
+    console.log("in db")
+  db.all(
+    `SELECT m.*, GROUP_CONCAT(mi.image_url, ',') AS images
+     FROM markers m
+     LEFT JOIN marker_images mi ON m.id = mi.marker_id
+     GROUP BY m.id`,
+    [],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      // Bilder wieder in Arrays umwandeln
+      const result = rows.map(row => ({
+        ...row,
+        images: row.images ? row.images.split(',') : []
+      }));
+
+      res.json(result);
+    }
+  );
 });
 
-app.post('/api/markers', upload.single("image"), (req, res) => {
-    //const {lat, lng, title, description, picture} = req.body
-    const {title, lat, lng, description} = req.body
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
-    console.log("image_url", image_url)
-    console.log("title", title)
-    console.log("lat", lat)
-    console.log("lng", lng)
-    console.log("description", description)
-    console.log("\n")
-    db.run(
-        `INSERT INTO markers (lat, lng, title, description, image_url) VALUES (?, ?, ?, ?, ?)`,
-        [ lat, lng, title, description, image_url],
-        function (err) {
-            if (err) res.status(500).json({error: err.message});
-            else {res.json({
-          id: this.lastID,
-          title,
-          description,
-          lat,
-          lng,
-          image_url,
-        });}
+
+app.post('/api/markers', upload.array("images", 10), (req, res) => {
+  const { title, lat, lng, description } = req.body;
+  const files = req.files;
+    console.log("post markers ", lat,lng,title,description, " f: ",  files);
+  db.run(
+    `INSERT INTO markers (lat, lng, title, description) VALUES (?, ?, ?, ?)`,
+    [lat, lng, title, description],
+    
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+
+      const markerId = this.lastID;
+      console.log("markerId ", markerId);
+      // Mehrere Bilder speichern
+      if (files && files.length > 0) {
+        const stmt = db.prepare("INSERT INTO marker_images (marker_id, image_url) VALUES (?, ?)");
+        files.forEach((file) => {
+          const image_url = `/uploads/${file.filename}`;
+          console.log("Image_url:", image_url);
+          stmt.run(markerId, image_url);
+        });
+        stmt.finalize();
+      }
+
+      res.json({ id: markerId, title, lat, lng,description,
+        images: files ? files.map(f => `/uploads/${f.filename}`) : []
+      });
+    }
+  );
+});
+
+
+app.put('/api/markers/:id', (req, res) => {
+    const {description} = req.body;
+    console.log("In markers, id", description, req.params.id)
+    db.run(`UPDATE markers set description=? WHERE id=?`,
+        [description, req.params.id],
+        function(err){
+            if(err) res.status(500).json({error: err.message});
+            else {
+                res.json({ updated: this.changes });
+                console.log("Erfolg")
+            }
         }
     )
 })
