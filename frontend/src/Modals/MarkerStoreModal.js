@@ -73,27 +73,17 @@ export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
                                             borderRadius: "8px",
                                             }}
                                         />
-                                        <button
+                                        <button // CloseButton
                                             onClick={() =>
                                             setPictures((prev) => prev.filter((_, index) => index !== i))
                                             }
-                                            style={{
-                                            position: "absolute",
-                                            top: "4px",
-                                            right: "4px",
-                                            background: "rgba(0,0,0,0.6)",
-                                            color: "white",
-                                            border: "none",
-                                            borderRadius: "50%",
-                                            width: "20px",
-                                            height: "20px",
-                                            cursor: "pointer",
-                                            lineHeight: "20px",
-                                            }}>
+                                            style={{ position: "absolute", top: "4px",right: "4px",
+                                            background: "rgba(0,0,0,0.6)", color: "white",border: "none",
+                                            borderRadius: "50%", width: "20px", height: "20px",
+                                            cursor: "pointer", lineHeight: "20px",}}>
                                             ×
                                         </button>
                                         </div>
-
                                     ))}
                                 </div>
                                 )}
@@ -101,7 +91,6 @@ export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
                         <Form.Group>
                             <Form.Label>
                                 <b>Koordinaten:  {lat}, { lng} </b></Form.Label>
-                            
                         </Form.Group>
                     </Form>
                 </Modal.Body>

@@ -213,6 +213,21 @@ app.put('/api/markers/:id', (req, res) => {
     )
 })
 
+app.delete('/api/markers/', (req,res) => {
+  db.run(`DELETE FROM markers WHERE id = (SELECT MAX(id) FROM markers)`, 
+    function(err){
+        if(err) res.status(500).json({ error: err.message });
+        else res.json({ deleted: this.changes });})
+})
+
+app.delete('/api/markers/all', (req,res) => {
+  console.log("YES")
+  db.run(`DELETE FROM markers`, 
+    function(err){
+        if(err) res.status(500).json({ error: err.message });
+        else res.json({ deleted: this.changes });})
+})
+
 // Server starten
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

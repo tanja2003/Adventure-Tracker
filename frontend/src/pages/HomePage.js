@@ -1,5 +1,4 @@
-import WorldMapPlanner from "../Design/WorldMapPlanner";
-
+import WorldMapPlanner from "../Design/WorldMap/WorldMapPlanner";
 
 
 function HomePage(){
