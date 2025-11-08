@@ -39,8 +39,7 @@ function SetViewOnClick({ animateRef }) {
   click(e) {
     map.setView(e.latlng, map.getZoom(), {
       animate: animateRef.current || false,
-    })
-  }
+    })}
 })
   return null
 }
@@ -88,10 +87,7 @@ export default function WorldMapPlanner() {
     } catch (error) {
       console.error("Something went wrong while deleting all markers");
     }
-    
-
   }
-  const undo2 = () => setMarkers((prev) => prev.slice(0, -1));
 
   const undo = async () =>{
     try{
@@ -114,16 +110,18 @@ export default function WorldMapPlanner() {
       <header className="p-4 shadow bg-white/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex items-center gap-2 flex-wrap">
           <h1 className="text-xl font-semibold">🌍 Reisekarte - Entdecke alle Abenteuerorte</h1>
-          <div className="ml-auto flex gap-2">
-            <Button variant="dark" onClick={undo} className="px-3 py-2 rounded-2xl shadow border">Rückgängig</Button>
-            <Button variant="info" onClick={clearAll} className="px-3 py-2 rounded-2xl shadow border">Alles löschen</Button>
-          </div>
         </div>
       </header>
       
-      <main className="w-full" style={{position:'relative', marginLeft:'100px', marginRight:'113px', marginTop:'30px', border: "4px solid black"}}>
+
+      <main className="w-full" style={{position:'relative', marginLeft:'100px', marginRight:'138px', marginTop:'30px'}}>
+              <h1 className="text-xl font-semibold mb-4">Weltkarte</h1>
+               <div className="ml-auto flex gap-2" style={{marginBottom:"20px"}}>
+            <Button variant="dark" onClick={undo} className="px-3 py-2 rounded-2xl shadow border">Rückgängig</Button>
+            <Button variant="info" onClick={clearAll} className="px-3 py-2 rounded-2xl shadow border">Alles löschen</Button>
+          </div>
         <MapContainer center={[48.3, 9]} zoom={9} minZoom={2}
-          style={{ height: "70vh", width:"180vh", }} >
+          style={{ height: "70vh", width:"180vh", border: "4px solid black"}} >
           <LayersControlMarker
             markers={markers}
             setMarkers={setMarkers}

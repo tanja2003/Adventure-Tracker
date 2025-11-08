@@ -34,6 +34,9 @@ export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
         } catch (err) {
           console.error("Fehler", err);
         }
+        setTitle("")
+        setDescription("")
+        setPictures([])
     };
 
     return (

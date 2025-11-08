@@ -31,7 +31,6 @@ export default function CalendarPage() {
 }, []);
 
   const handleEventClick = (info) => {
-    console.log("yes event")
     setClickedDate(info.event.start);
     setSelectedEventId(info.event.id);
     setDeleteEventModal(true)
@@ -42,7 +41,6 @@ export default function CalendarPage() {
       const res = await fetch(`http://localhost:5000/api/events/${selectedEventId}`, {
       method: "DELETE",
     });
-    console.log("in delete", selectedEventId)
     if (res.ok) {
       const calendarApi = calendarRef.current.getApi();
       const event = calendarApi.getEventById(selectedEventId);
@@ -76,8 +74,6 @@ export default function CalendarPage() {
       })
       .catch((err) => console.error("Fehler beim Speichern:", err));
   };
-
- 
     
 
   return (
@@ -93,6 +89,7 @@ export default function CalendarPage() {
           right: "dayGridMonth,timeGridWeek,timeGridDay"
         }}
         events={ events}
+        //eventColor="#999999ff"
         eventClick={handleEventClick}
         dateClick={handleDateClick}
       />

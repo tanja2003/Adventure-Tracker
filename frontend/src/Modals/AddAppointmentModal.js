@@ -6,7 +6,11 @@ function formatForDateTimeLocal(value, isEnd) {
 
   const date = new Date(value);
   let hours = date.getHours(); 
-  if (isEnd) hours += 1
+  console.log("H1", hours)
+  if (isEnd) {
+    //hours += 1
+    console.log("H2",hours)
+  }
 
   const pad = (n) => n.toString().padStart(2, "0");
   return (date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" +

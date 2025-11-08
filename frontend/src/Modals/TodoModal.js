@@ -1,6 +1,6 @@
 import { Modal,  Form, Button} from "react-bootstrap"
 import { useState } from "react";
-import Select, { AriaOnFocus } from 'react-select';
+import Select from 'react-select';
 
 export default function TodoModal ({show, onClose, onSave})  {
     const [title, setTitle] = useState("");
@@ -14,7 +14,6 @@ export default function TodoModal ({show, onClose, onSave})  {
 
      const handleWheaterChange = (option) => {
         setWheaterFilter(option.value)
-
     }
 
     const handleSubmit = async (e) => {
@@ -37,12 +36,10 @@ try {
     onSave(savedTodos);
     onClose();
   }
-} catch (err) {
-  console.error("Fehler beim Speichern:", err);
-}
-
-    }
-
+  } catch (err) {
+    console.error("Fehler beim Speichern:", err);
+  }
+  }
 
 
     return (
@@ -55,7 +52,7 @@ try {
                     <Form>
                         <Form.Group className="mb-3">
                                 <Form.Label>*Titel eingeben: </Form.Label>
-                                <Form.Control type="text" placeholder="Titel eingeben"
+                                <Form.Control type="text" placeholder="Titel eingeben" required="True"
                                     value={title} onChange={(e) => setTitle(e.target.value)}/>
                             </Form.Group>
                         <Form.Group className="mb-3">
