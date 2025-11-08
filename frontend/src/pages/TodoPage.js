@@ -66,19 +66,12 @@ function ToDoPage(){
       setTodos(data);
   }
 
-  const fetchTodosWithoutOption = async() => {
-    const res = await fetch(`http://localhost:5000/api/todos`)
-    const data = await res.json(); // change response in JS-object
-    setTodos(data);
-  }
-
-
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-2">📝 TODO Liste</h1>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop:"20px", marginBottom:"15px" }}>  
       <TodoModal show={openTodoStoreModal} onClose={() => {setOpenTodoStoreModal(false);}}
-        onSave={(savedTodos) => {setOpenTodoStoreModal(false); fetchTodosWithoutOption()}} >Todo Hinzufügen</TodoModal>
+        onSave={(savedTodos) => {setOpenTodoStoreModal(false); fetchTodos()}} >Todo Hinzufügen</TodoModal>
       <Button onClick={addTodo} color="primary" variant="primary">+ Hinzufügen</Button>
        <Select
         defaultValue={options[0]}
