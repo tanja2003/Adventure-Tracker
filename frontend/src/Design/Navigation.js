@@ -14,7 +14,7 @@ function Navbar1() {
             <Nav.Link as={Link} to="/">Home</Nav.Link>
             <Nav.Link as={Link} to="/calender">Kalender</Nav.Link>
             <Nav.Link as={Link} to="/todo">ToDo's</Nav.Link>
-            <Nav.Link as={Link} to="/login">Login</Nav.Link>
+            <Nav.Link as={Link} tp="/logout">Logout</Nav.Link>
           </Nav>
         </Container>
       </Navbar>

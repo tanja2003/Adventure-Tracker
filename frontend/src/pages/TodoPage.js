@@ -61,7 +61,12 @@ function ToDoPage(){
   }
 
   const fetchTodos = async (option) => {
-    const res = await fetch(`http://localhost:5000/api/todos/${option}`)
+    const token = localStorage.getItem('token');
+    const res = await fetch(`http://localhost:5000/api/todos/${option}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
     const data = await res.json(); // change response in JS-object
       setTodos(data);
   }

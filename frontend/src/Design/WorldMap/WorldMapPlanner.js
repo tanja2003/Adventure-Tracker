@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMapEvents} from "react-leaflet";
 import L from "leaflet";
-import MarkerStoreModal from "../../Modals/MarkerStoreModal";
+import "leaflet/dist/leaflet.css";
+import MarkerStoreModal from "./MarkerStoreModal";
 import LightBoxModal from "../../Modals/LightBoxModal";
 import { Button } from "react-bootstrap";
 import ShowAdventures from "./ShowAdventures";
@@ -9,9 +10,9 @@ import LayersControlMarker from "./LayersControl";
 
 // Leaflet benötigt eigene Icon-URLs (sonst fehlen die Marker-Pins in vielen Bundlern)
 const defaultIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconUrl: "/leaflet/marker-icon.png",
+  iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+  shadowUrl: "/leaflet/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -54,8 +55,23 @@ export default function WorldMapPlanner() {
 
   useEffect(() => {
     const loadMarkers = async () => {
-      const res = await fetch("http://localhost:5000/api/markers")
+      const token = localStorage.getItem("token");
+      console.log("token", token);
+      const res = await fetch("http://localhost:5000/api/markers", {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
+      //const res = await fetch("http://localhost:5000/api/markers")
       const data = await res.json();
+      console.log("data", data);
+
+      if (!Array.isArray(data)) {
+        console.error("❌ Server hat kein Array zurückgegeben:", data);
+        return; // verhindert Absturz
+      }
+
       const markersWithNumbers = data.map(m => ({
         ...m,
         lat: Number(m.lat),
