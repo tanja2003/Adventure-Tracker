@@ -7,6 +7,7 @@ import LightBoxModal from "../../Modals/LightBoxModal";
 import { Button } from "react-bootstrap";
 import ShowAdventures from "./ShowAdventures";
 import LayersControlMarker from "./LayersControl";
+import { useNavigate } from "react-router-dom";
 
 // Leaflet benötigt eigene Icon-URLs (sonst fehlen die Marker-Pins in vielen Bundlern)
 const defaultIcon = new L.Icon({
@@ -52,24 +53,29 @@ export default function WorldMapPlanner() {
   const [markers, setMarkers] = useState([]); 
   const animateRef = useRef(false)
   const [lightboxImage, setLightboxImage] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadMarkers = async () => {
       const token = localStorage.getItem("token");
-      console.log("token", token);
       const res = await fetch("http://localhost:5000/api/markers", {
         method: "GET",
         headers: {
-          "Authorization": "Bearer " + token
+          "Authorization": `Bearer ${token}`
         }
       });
-      //const res = await fetch("http://localhost:5000/api/markers")
       const data = await res.json();
-      console.log("data", data);
+
+      if (res.status === 401){
+        console.warn("Token expired or invalid. Redirecting to login...");
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
 
       if (!Array.isArray(data)) {
         console.error("❌ Server hat kein Array zurückgegeben:", data);
-        return; // verhindert Absturz
+        return; 
       }
 
       const markersWithNumbers = data.map(m => ({
@@ -91,10 +97,20 @@ export default function WorldMapPlanner() {
   };
 
   const clearAll = async () => {
+    const token = localStorage.getItem("token");
     try{
       const res = await fetch("http://localhost:5000/api/markers/all", {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       });
+      if (res.status === 401){
+        console.warn("Token expired or invalid. Redirecting to login...");
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
       if (res.ok){
         setMarkers([]);
       } else {
@@ -107,8 +123,12 @@ export default function WorldMapPlanner() {
 
   const undo = async () =>{
     try{
+      const token = localStorage.getItem("token");
       const res = await fetch(`http://localhost:5000/api/markers`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       })
       if (res.ok){
         setMarkers((prev) =>prev.slice(0,-1));

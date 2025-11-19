@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function Login () {
-    const [input, setInput] = useState({email:"", password: ""});
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorEmail, setErrorEmail] = useState(false);
@@ -25,7 +24,13 @@ export default function Login () {
         navigate("/register");
     }
 
+    const cleanErrorText = () => {
+        setErrorEmail(false);
+        setErrorPassword(false);
+    }
+
     const handleSignIn = async (e) => {
+      cleanErrorText();
       console.log(" in handle sign in")
         e.preventDefault();
         try{
@@ -43,6 +48,10 @@ export default function Login () {
             navigate("/"); 
           } else {
             console.error(data.error);
+            setErrorEmail(true);
+            setEmail("");
+            setErrorPassword(true);
+            setPassword("");
           }
         } catch (error) {
             console.error("Something went wrong while sign in a new account!")

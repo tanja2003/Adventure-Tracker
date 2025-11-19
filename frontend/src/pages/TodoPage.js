@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { Button, ToggleButton } from "react-bootstrap";
 import Select from 'react-select';
 import TodoModal from "../Modals/TodoModal";
+import { useNavigate } from "react-router-dom";
 
 
 function ToDoPage(){
   const [todos, setTodos] = useState([]); // array of todo-objects
+  const navigate = useNavigate();
   const [openTodoStoreModal, setOpenTodoStoreModal] = useState(false);
   const options = [
   { value: "all", label: "Alle" },
@@ -19,9 +21,25 @@ function ToDoPage(){
   // to see all TODO's at begin
   useEffect(() => { // first render
     const loadTodos = async () => {
-      const res = await fetch("http://localhost:5000/api/todos"); // todos from backend
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:5000/api/todos", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }); // todos from backend
       const data = await res.json(); // change response in JS-object
-      setTodos(data); // stores data in todos
+
+      if (res.status === 401){
+        console.warn("Token expired or invalid. Redirecting to login...");
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (res.ok){
+        setTodos(data);
+      }
     };
     loadTodos();
   }, []);
@@ -33,10 +51,20 @@ function ToDoPage(){
 
 
   const deleteTodo = async (id) => {
-    console.log("ID: ", id)
+    const token = localStorage.getItem("token");
     const res = await fetch(`http://localhost:5000/api/todos/${id}`, {
       method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
+      if (res.status === 401){
+        console.warn("Token expired or invalid. Redirecting to login...");
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
       if (res.ok) {
         setTodos(todos.filter(todo => todo.id !== id));
       } else {
@@ -46,16 +74,36 @@ function ToDoPage(){
 
 
   const toggleDone = async (id) => {
-    const updatedTodos = todos.map(todo =>
-      todo.id === id ? { ...todo, done: !todo.done } : todo
-    );
-    setTodos(updatedTodos);
-    await fetch(`http://localhost:5000/api/todos/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ done: !todos.find(t => t.id === id).done })
-    });
+    try{
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:5000/api/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json",
+                   "Authorization": `Bearer ${token}`
+         },
+        body: JSON.stringify({ done: !todos.find(t => t.id === id).done })
+      });
+
+      if (res.status === 401){
+        console.warn("Token expired or invalid. Redirecting to login...");
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (res.ok){
+        const updatedTodos = todos.map(todo =>
+          todo.id === id ? { ...todo, done: !todo.done } : todo
+        );
+        setTodos(updatedTodos);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    
   };
+
+
   const handleChange = (option) =>{
     fetchTodos(option.value); 
   }

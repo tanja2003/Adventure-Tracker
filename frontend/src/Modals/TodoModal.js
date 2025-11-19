@@ -1,10 +1,12 @@
 import { Modal,  Form, Button} from "react-bootstrap"
 import { useState } from "react";
 import Select from 'react-select';
+import { useNavigate } from "react-router-dom";
 
 export default function TodoModal ({show, onClose, onSave})  {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const navigate = useNavigate();
     const wheaterOptions = [
       { value: "sunny", label: "Sonniges Wetter"},
       { value: "rainy", label: "Regnerisches Wetter"},
@@ -20,15 +22,25 @@ export default function TodoModal ({show, onClose, onSave})  {
     e.preventDefault();
 
 try {
+  const token = localStorage.getItem("token");
   const res = await fetch("http://localhost:5000/api/todos", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+     },
     body: JSON.stringify({
       title,
       description,
       wheater: wheaterFilter,
     }),
   });
+
+  if (res.status === 401){
+    console.warn("Token expired or invalid. Redirecting to login...");
+    localStorage.removeItem("token");
+    navigate("/login");
+    return;
+  }
 
   if (res.ok) {
     const savedTodos = await res.json();

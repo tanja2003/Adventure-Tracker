@@ -6,8 +6,6 @@ const upload = multer({ dest: "uploads/" });
 
 // World map
 markersRouter.get('/', (req, res) => {
-    console.log("Authorization Header:", req.headers.authorization);
-
   db.all(
     `SELECT m.*, GROUP_CONCAT(mi.image_url, ',') AS images
      FROM markers m
@@ -64,7 +62,6 @@ markersRouter.post('/', upload.array("images", 10), (req, res) => {
 
 markersRouter.put('/:id', (req, res) => {
     const {description} = req.body;
-    console.log("In markers, id", description, req.params.id)
     db.run(`UPDATE markers set description=? WHERE id=? and account_id=?`,
         [description, req.params.id, req.userId],
         function(err){
@@ -85,7 +82,6 @@ markersRouter.delete('/', (req,res) => {
 })
 
 markersRouter.delete('/all', (req,res) => {
-  console.log("YES")
   db.run(`DELETE FROM markers where account_id=?`, [req.userId], 
     function(err){
         if(err) res.status(500).json({ error: err.message });

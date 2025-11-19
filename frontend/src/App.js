@@ -10,7 +10,6 @@ import { ProtectedRoute } from "./ProtectedRoutes";
 import Register from "./Account/Register";
 import LogoutModal from "./Account/Logout";
 import useAutoLogout from "./Account/AutoLogout";
-// <-- wichtig: Default-Icon setzen
 import 'leaflet/dist/leaflet.css';
 
 function App() {

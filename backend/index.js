@@ -37,10 +37,8 @@ app.post('/api/register', (req, res) => {
     return res.status(400).json({ error: "E-Mail und Passwort sind erforderlich" });
   }
 
-  // 1️⃣ Passwort hashen
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-  // 2️⃣ Benutzer einfügen
   db.run(
     `INSERT INTO account (email, password) VALUES (?, ?)`,
     [email, hashedPassword],
@@ -53,11 +51,10 @@ app.post('/api/register', (req, res) => {
         return res.status(500).json({ error: "Fehler beim Anlegen des Accounts" });
       }
 
-      // 3️⃣ JWT Token generieren
       const token = jwt.sign(
         { id: this.lastID, email },
-        JWT_SECRET, // ⚠️ Später in .env-Datei auslagern!
-        { expiresIn: '2m' }
+        JWT_SECRET, 
+        { expiresIn: '30m' }
       );
 
       console.log("✅ Benutzer erfolgreich erstellt:", email);
@@ -70,21 +67,17 @@ app.post('/api/register', (req, res) => {
 // Login
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
-   console.log("login", email, password);
   db.get('SELECT * FROM account WHERE email = ?', [email], (err, user) => {
     if (err) return res.status(500).json({ error: 'DB Fehler' });
     if (!user) return res.status(401).json({ error: 'Kein Account gefunden' });
 
     const valid = bcrypt.compareSync(password, user.password);
-    console.log("pass", password);
-    console.log("user", user.password);
-    console.log("va", valid);
     if (!valid) return res.status(401).json({ error: 'Falsches Passwort' });
 
     const token = jwt.sign(
       { id: user.id, email: user.email },
       JWT_SECRET,  // <-- in .env speichern!
-      { expiresIn: '1h' }
+      { expiresIn: '30m' }
     );
 
     res.json({ token });

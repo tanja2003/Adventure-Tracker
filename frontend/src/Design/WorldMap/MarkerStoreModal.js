@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [picture, setPictures] = useState([]);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        console.log("in handleSubmit")
         e.preventDefault();
         const token = localStorage.getItem("token");
-
         const formData = new FormData();
+
         formData.append("title", title)
         formData.append("description", description);
         formData.append("lat", lat);
@@ -23,10 +24,17 @@ export default function MarkerStoreModal  ({show, onClose, lat, lng, onSave}) {
           const res = await fetch("http://localhost:5000/api/markers", {
             method: "POST",
             headers: {
-            "Authorization": "Bearer " + token
+                "Authorization": `Bearer ${token}`
             },
-            body: formData, // wichtig: kein JSON.stringify hier!
+            body: formData, 
           });
+
+          if (res.status === 401){
+            console.warn("Token expired or invalid. Redirecting to login...");
+            localStorage.removeItem("token");
+            navigate("/login");
+            return;
+          }
       
           if (res.ok) {
             const savedMarker = await res.json(); 

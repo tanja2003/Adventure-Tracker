@@ -71,9 +71,7 @@ export default function Register(){
                 body: JSON.stringify({email, password})
             });
             const data = await res.json();
-            
-                localStorage.setItem("token", data.token);
-       
+            localStorage.setItem("token", data.token);
             navigate("/");
 
 
@@ -84,7 +82,7 @@ export default function Register(){
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50" >
-            <div style={{ fontSize:"24px", padding:"40px", marginLeft:"35%", position:"relative", backgroundColor:"#979595ff", marginRight:"35%", marginTop:"5%"}}>
+            <div className="bg-gray-400 p-8 rounded-lg w-full max-w-md shadow-lg" style={{ fontSize:"24px", padding:"40px", marginLeft:"35%", position:"relative", marginRight:"35%", marginTop:"5%"}}>
                  <div style={{display:"flex", marginBottom:"30px"}}>
                     <BackButton />
                  <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Registrierung</h1>

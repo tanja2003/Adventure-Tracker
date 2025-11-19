@@ -1,17 +1,29 @@
 import { Button } from "react-bootstrap";
 import { Pencil } from "lucide-react";
 import {useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 export default function ShowAdventures({markers, setMarkers, setLightboxImage}){
     const [showInputBox, setShowInputBox] = useState(false);
-    
+    const navigate = useNavigate();
 
     const  handleDescriptionChange =  async (index, newDescription) => {
+        const token = localStorage.getItem("token");
+        console.log("token", token, index);
         const res = await fetch(`http://localhost:5000/api/markers/${index}`, {
         method: "PUT",
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+        },
         body: JSON.stringify({description: newDescription})
         });
+        if (res.status === 401){
+            console.warn("Token expired or invalid. Redirecting to login...");
+            localStorage.removeItem("token");
+            navigate("/login");
+            return;
+        }
         if (!res.ok) console.error("Fehler beim aktualisieren", await res.text());
         setShowInputBox(false)
     };
