@@ -1,12 +1,13 @@
 import { Check, Icon, Regex } from "lucide-react";
 import { useState } from "react";
-import { Button, ToggleButton } from "react-bootstrap";
+import { Button, Card, Form, ToggleButton } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../Design/BackButton";
 import DatenschutzCheckbox from "../Design/Datenschutz";
 
 
 export default function Register(){
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
     const [password_again, setPasswordAgain] = useState("");
     const [email, setEmail] = useState("");
@@ -21,6 +22,11 @@ export default function Register(){
         setErrorEmail(false);
         setErrorPassword(false);
         setErrorPasswordAgain(false);
+    }
+
+    const handleInputName = (e) => {
+        const name = e.target.value;
+        setName(name);
     }
     const handleInputEmail = (e) => {
         const email = e.target.value;
@@ -68,7 +74,7 @@ export default function Register(){
             const res = await fetch('http://localhost:5000/api/register', {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json'},
-                body: JSON.stringify({email, password})
+                body: JSON.stringify({name, email, password})
             });
             const data = await res.json();
             localStorage.setItem("token", data.token);
@@ -81,53 +87,62 @@ export default function Register(){
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50" >
-            <div className="bg-gray-400 p-8 rounded-lg w-full max-w-md shadow-lg" style={{ fontSize:"24px", padding:"40px", marginLeft:"35%", position:"relative", marginRight:"35%", marginTop:"5%"}}>
-                 <div style={{display:"flex", marginBottom:"30px"}}>
+        <div className="d-flex justify-content-center align-items-center" style={{marginTop:"80px"}} >
+            <Card className="p-4 shadow" style={{ width: "600px"}}>
+                <div style={{display:"flex", alignItems:"center"}}>
                     <BackButton />
-                 <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Registrierung</h1>
-                 </div>
-                 
-            <div className="flex flex-col space-y-1">
-                <label htmlFor="email-register" style={{marginRight:"36px"}}>E-Mail</label>
-                <input type="email"
-                    id="email-register"
-                    name="email-register"
-                    placeholder="example@gmail.com"
-                    onChange={handleInputEmail}
-                    aria-invalid="false"
-                    required></input>
-                {errorEmail && (
-                    <p id="email-help" className="sr-only" style={{fontSize:"15px", color:"red"}}>Ungültige E-Mail-Addresse!</p>
-                )}
-            </div>
-            <div className="flex  space-y-1" style={{marginTop:"20px"}}>
-                <label htmlFor="password-register" style={{marginRight:"10px"}}>Passwort</label>
-                <input type="password"
-                    id="password-register"
-                    name="password-register"
-                    onChange={handleInputPassword}
-                    aria-invalid="false"
-                    required></input>
-                {errorPassword && (
-                    <p id="password-help" className="sr-only" style={{fontSize:"15px", color:"red"}}>Ungültiges Passwort</p>
-                )}
-            </div>
-            <div className="flex  space-y-1" style={{marginTop:"20px"}}>
-                <label htmlFor="password_again" style={{marginRight:"10px"}}>Passwort wiederholen</label>
-                <input type="password"
-                    id="password_again"
-                    name="password_again"
-                    onChange={handleInputPasswordAgain}
-                    aria-invalid="false"
-                    required></input>
-                {errorPasswordAgain && (
-                    <p id="password_again-help" className="sr-only" style={{fontSize:"15px", color:"red"}}>Nicht dasselbe Passwort</p>
-                )}
-            </div>
-             <DatenschutzCheckbox onChange={setAgreed} />
-            <Button disabled={!agreed} onClick={handleSignIn}>Registrieren</Button>
-            </div>
+                    <h2 className="text-center mb-3" style={{marginLeft:"100px"}}>Register</h2>   
+                </div>
+                
+              <Form style={{padding:"30px"}}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Name: </Form.Label>
+                        <Form.Control 
+                            type="text"
+                            placeholder="Max Mustermann"
+                            value={name}
+                            onChange={(e) => setEmail(e.target.value)}/>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>E-Mail:</Form.Label>
+                        <Form.Control
+                            type="email"
+                            placeholder="example@gmail.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required/>
+                        {errorEmail && (
+                            <p id="email-help" className="sr-only" style={{fontSize:"15px", color:"red"}}>Ungültige E-Mail-Addresse!</p>
+                        )}
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Passwort:</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="•••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required/>
+                        {errorPassword && (
+                            <p id="password-help" className="sr-only" style={{fontSize:"15px", color:"red"}}>Ungültiges Passwort! </p>
+                        )}
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Wiederholen:</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="•••••••"
+                            value={password_again}
+                            onChange={(e) => setPasswordAgain(e.target.value)}
+                            required/>
+                        {errorPasswordAgain && (
+                            <p id="password-again-help" className="sr-only" style={{fontSize:"15px", color:"red"}}>Nicht dasselbe Passwort! </p>
+                        )}
+                    </Form.Group>
+                     <DatenschutzCheckbox onChange={setAgreed}/>
+                    <Button disabled={!agreed} onClick={handleSignIn}>Registrieren</Button>       
+              </Form>
+            </Card>
         </div>
     )
 }

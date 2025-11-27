@@ -3,6 +3,7 @@ import { Button, ToggleButton } from "react-bootstrap";
 import Select from 'react-select';
 import TodoModal from "../Modals/TodoModal";
 import { useNavigate } from "react-router-dom";
+import { Trash3 } from "react-bootstrap-icons";
 
 
 function ToDoPage(){
@@ -141,7 +142,8 @@ function ToDoPage(){
             size="sm" onClick={() => toggleDone(todo.id)}>
           </ToggleButton>
           <span style={{marginLeft: "20px", marginRight:"20px"}}>{ todo.title}</span>
-          <Button variant="danger" size="sm" onClick={() => deleteTodo(todo.id)}>X</Button>
+          <Trash3 color="red" size={23} onClick={() => deleteTodo(todo.id)}></Trash3>
+          
         </div>
       ))}
       </ul>

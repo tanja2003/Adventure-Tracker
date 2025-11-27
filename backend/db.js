@@ -8,9 +8,13 @@ const db = new sqlite3.Database('./planner.db', (err) => {
 // Tabellen erstellen
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS account (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL)`);
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    resetToken TEXT,
+    resetTokenExpire INTEGER
+    );`);
 
     db.run(`CREATE TABLE IF NOT EXISTS todos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

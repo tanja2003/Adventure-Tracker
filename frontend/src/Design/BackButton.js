@@ -6,13 +6,13 @@ export default function BackButton() {
   const navigate = useNavigate();
 
   return (
-    <button
+    <Button
   onClick={() => navigate(-1)}
-  style={{ marginRight:"20px", blockSize:"50px"}}
-  className="flex items-center px-3 py-1 bg-gray-100 hover:bg-gray-200  font-bold rounded-lg shadow"
+  style={{width:"40px", margin:"30px", blockSize:"38px"}}
+  type="button"  variant="outline-primary" className="w-full"
 >
-  ← 
-</button>
+    ← 
+</Button>
 
   );
 }

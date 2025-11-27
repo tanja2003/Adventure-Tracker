@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { Button } from "react-bootstrap";
+import { Button, Card, Form, Nav } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Navigation/Authprovider";
 
 
 export default function Login () {
@@ -9,20 +10,8 @@ export default function Login () {
     const [errorEmail, setErrorEmail] = useState(false);
     const [errorPassword, setErrorPassword] = useState(false);
     const navigate = useNavigate();
+    const {login} = useAuth();
 
-    const handleInputEmail = (e) => {
-        const name = e.target.value;
-        setEmail(name);
-    }
-
-    const handleInputPassword = (e) => {
-        const password = e.target.value;
-        setPassword(password);
-    }
-
-    const handleRegister = async (e) => {
-        navigate("/register");
-    }
 
     const cleanErrorText = () => {
         setErrorEmail(false);
@@ -45,6 +34,7 @@ export default function Login () {
           const data = await res.json();
           if (res.ok) {
             localStorage.setItem("token", data.token); 
+            login(data.token);
             navigate("/"); 
           } else {
             console.error(data.error);
@@ -59,64 +49,63 @@ export default function Login () {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">🔐 Login</h1>
+        <div className="d-flex justify-content-center align-items-center" style={{marginTop:"80px"}}>
+        <Card className="p-4 shadow" style={{ width: "600px"}}>
+          <h2 className="text-center mb-3" style={{marginTop:"40px"}}>Login</h2>
        
-        <form className="bg-gray-400 p-8 rounded-lg w-full max-w-md shadow-lg"  style={{ fontSize:"24px", padding:"80px", marginLeft:"35%", position:"relative", marginRight:"35%", marginTop:"5%"}}>
-            <nav style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "50px" }}>
+        <Form style={{ padding:"30px" }} >
+            <Nav style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "50px" }}>
                 <p style={{fontSize:"18px", margin:"0 10px 0 0"}}  className="w-full">Noch keinen Account?</p>
-                <Button type="button"  variant="outline-primary" className="w-full" onClick={handleRegister}>
+                <Button type="button"  variant="outline-primary" className="w-full" onClick={() => navigate("/register")}>
                     Jetzt Registrieren
                 </Button>
-            </nav>
+            </Nav>
           {/* E-Mail */}
-          <div className="flex flex-col space-y-1">
-            <label htmlFor="email" style={{marginRight:"36px"
-            }}>E-Mail: </label>
-            <input
+          <Form.Group className="mb-3">
+            <Form.Label>E-Mail-Adresse</Form.Label>
+            <Form.Control
               type="email"
-              id="email"
-              name="email"
-              placeholder="example@gmail.com"
-              onChange={handleInputEmail}
-              aria-invalid="false"
+              placeholder="example@mail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
             {errorEmail && (
                 <p id="email-help" className="sr-only" style={{fontSize:"15px"}}>
               Bitte eine gültige E-Mail eingeben.
             </p>
             )}
-            
-          </div>
+          </Form.Group>
+        
 
           {/* Passwort */}
-          <div className="flex  space-y-1" style={{marginTop:"20px"}}>
-            <label htmlFor="password" style={{marginRight:"10px"}}>Passwort:</label>
-            <input
+          <Form.Group className="mb-3">
+            <Form.Label>Passwort</Form.Label>
+            <Form.Control
               type="password"
-              id="password"
-              name="password"
               placeholder="•••••••"
-              onChange={handleInputPassword}
-              aria-invalid="false"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
             {errorPassword && (
-            <p id="password-help" className="text-red-600 text-sm mt-1" style={{fontSize:"15px"}}>
-                Passwort muss mindestens 6 Zeichen enthalten.
+                <p id="email-help" className="sr-only" style={{fontSize:"15px"}}>
+              Passwort muss mindestens 6 Zeichen enthalten.
             </p>
             )}
-
-          </div>
+          </Form.Group>
 
           {/* Buttons */}
-          <div className="flex  mt-6" style={{marginTop:"30px"}}>
+          <div className="flex  mt-6" style={{marginTop:"40px"}}>
             <Button type="submit"  className="w-full" onClick={handleSignIn}>
               Anmelden
             </Button>
           </div>
-          <Button type="button" variant="outline" className="w-full" style={{fontSize:"15px", marginLeft:"-10px", marginTop:"-12px"}}>Passwort vergessen?</Button>
+          <Button variant="link" onClick={() => navigate("/forgotpassword")}  className="w-full" style={{fontSize:"15px", marginLeft:"-10px"}}>Passwort vergessen?</Button>
 
-        </form>
+        </Form>
+        </Card>
+        
     </div>
     )
 }

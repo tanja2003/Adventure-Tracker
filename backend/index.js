@@ -11,6 +11,7 @@ const  authenticate = require('./authenticate'); // Middleware
 const todosRouter = require('./routes/todos'); // ✅ direkt importieren
 const eventsRouter = require('./routes/events');
 const markersRouter = require('./routes/markers');
+const { error } = require('console');
 
 const upload = multer({ dest: "uploads/" });
 const app = express();
@@ -29,9 +30,20 @@ app.use('/api/markers', authenticate, markersRouter);
 
 // Register
 
+app.get('/api/register/name', authenticate, (req, res) => {
+
+  db.all(
+    `Select name from account WHERE id=?`, [req.userId],
+    function (err, rows) {
+      if (err) res.status(500).json({error: err.message });
+      else res.json(rows);
+    }
+  )
+})
+
 app.post('/api/register', (req, res) => {
   console.log("📩 In /api/register");
-  const { email, password } = req.body;
+  const {name, email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: "E-Mail und Passwort sind erforderlich" });
@@ -40,8 +52,8 @@ app.post('/api/register', (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   db.run(
-    `INSERT INTO account (email, password) VALUES (?, ?)`,
-    [email, hashedPassword],
+    `INSERT INTO account (name, email, password) VALUES (?, ?, ?)`,
+    [name, email, hashedPassword],
     function (err) {
       if (err) {
         console.error("DB Error:", err.message);
@@ -52,13 +64,70 @@ app.post('/api/register', (req, res) => {
       }
 
       const token = jwt.sign(
-        { id: this.lastID, email },
+        { id: this.lastID, email, name },
         JWT_SECRET, 
         { expiresIn: '30m' }
       );
 
       console.log("✅ Benutzer erfolgreich erstellt:", email);
       res.status(200).json({ token });
+    }
+  );
+});
+
+
+
+app.post('/api/auth/forgotpassword', (req, res) => {
+  const email = req.body.email;
+
+  db.get(
+    "SELECT id FROM account WHERE email=?", [email],
+    (err, row) => {
+      if (err) return res.status(500).json({ error:err.message});
+      if (!row) {
+        return res.status(404).json({ error: "E-Mail nicht gefunden" });
+      }
+      const accountId = row.id;
+      const crypto = require("crypto");
+      const token = crypto.randomBytes(32).toString("hex");
+      const expires = Date.now() + 1000 * 60 * 15; // 15 Minuten gültig
+
+      db.run(
+        "UPDATE account SET resetToken=?, resetTokenExpire=? WHERE id=?",
+        [token, expires, accountId],
+        (err) => {
+          if (err) return res.status(500).json({ error: err.message });
+
+          const url = `http://localhost:3000/reset/${token}`;
+          res.json({ url, token }); // du bekommst die URL zurück
+        }
+      );
+})})
+
+
+
+app.post("/api/reset/password", async (req, res) => {
+  const { token, password } = req.body;
+  console.log("in reset password")
+  db.get(
+    "SELECT id, resetTokenExpire FROM account WHERE resetToken=?",
+    [token],
+    async (err, user) => {
+      if (!user) return res.status(400).json({ error: "Ungültiger Token" });
+
+      if (user.reset_expires < Date.now()) {
+        return res.status(400).json({ error: "Token abgelaufen" });
+      }
+
+      const bcrypt = require("bcrypt");
+      const hash = await bcrypt.hash(password, 10);
+
+      db.run(
+        "UPDATE account SET password=?, resetToken=NULL, resetTokenExpire=NULL WHERE id=?",
+        [hash, user.id]
+      );
+
+      res.json({ message: "Passwort erfolgreich geändert" });
     }
   );
 });
@@ -75,7 +144,7 @@ app.post('/api/login', (req, res) => {
     if (!valid) return res.status(401).json({ error: 'Falsches Passwort' });
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, name: user.name },
       JWT_SECRET,  // <-- in .env speichern!
       { expiresIn: '30m' }
     );
