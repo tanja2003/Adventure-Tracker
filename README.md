@@ -176,7 +176,7 @@ The application will open at `http://localhost:3000`
 
 ### Tables
 - **account**: User accounts (id, name, email, password, resetToken, resetTokenExpire)
-- **todos**: Task items (id, account_id, title, description, done, wheater)
+- **todos**: Task items (id, account_id, title, description, done, weather)
 - **events**: Calendar events (id, account_id, title, date, start, end)
 - **markers**: Map markers (id, account_id, lat, lng, title, description)
 - **marker_images**: Images for markers (id, marker_id, image_url)
