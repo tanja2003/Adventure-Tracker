@@ -1,13 +1,13 @@
 {
-  "dependencies": {
-    "@mui/icons-material": "^7.3.5",
-    "axios": "^1.13.2",
-    "bcrypt": "^6.0.0",
-    "bootstrap-icons": "^1.13.1",
-    "jsonwebtoken": "^9.0.2",
-    "jwt-decode": "^4.0.0",
-    "react-bootstrap-icons": "^1.11.6",
-    "react-router-dom": "^7.9.6",
-    "react-toastify": "^11.0.5"
+  "name": "adventure-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install-all": "npm install --workspaces",
+    "start": "npm run start --workspace=backend & npm run start --workspace=frontend"
   }
 }

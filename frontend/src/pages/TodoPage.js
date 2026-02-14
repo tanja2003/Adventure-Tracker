@@ -7,7 +7,7 @@ import { Trash3 } from "react-bootstrap-icons";
 
 
 function ToDoPage(){
-  const [todos, setTodos] = useState([]); // array of todo-objects
+  const [todos, setTodos] = useState([]);
   const navigate = useNavigate();
   const [openTodoStoreModal, setOpenTodoStoreModal] = useState(false);
   const options = [
@@ -19,8 +19,8 @@ function ToDoPage(){
 ];
 
 
-  // to see all TODO's at begin
-  useEffect(() => { // first render
+  // First render: to see all TODO's at begin
+  useEffect(() => { 
     const loadTodos = async () => {
       const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:5000/api/todos", {
@@ -28,8 +28,8 @@ function ToDoPage(){
         headers: {
           "Authorization": `Bearer ${token}`
         }
-      }); // todos from backend
-      const data = await res.json(); // change response in JS-object
+      }); 
+      const data = await res.json(); 
 
       if (res.status === 401){
         console.warn("Token expired or invalid. Redirecting to login...");
@@ -116,7 +116,7 @@ function ToDoPage(){
         'Authorization': `Bearer ${token}`
       }
     })
-    const data = await res.json(); // change response in JS-object
+    const data = await res.json(); 
       setTodos(data);
   }
 
@@ -135,7 +135,7 @@ function ToDoPage(){
       />
       </div>
       <ul> 
-        {todos.map(todo => ( //list of TODO's
+        {todos.map(todo => ( 
         <div key={todo.id} style={{marginTop: "10px", marginBottom:"10px"}}>
           <ToggleButton
             variant={todo.done ? "success" : "outline-success"}

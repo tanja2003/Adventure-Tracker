@@ -47,7 +47,7 @@ function Navbar1() {
           <Navbar.Brand href="#home" style={{fontSize:"30px", marginRight:"25px", marginLeft:"20px", position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
             {username
             ? `${username}'s Abenteuer`
-            : "Abenteuer Tracker" }</Navbar.Brand>
+            : "Adventure Tracker" }</Navbar.Brand>
           <Nav className="me-auto" style={{marginLeft:"20px"}}>
             <Nav.Link style={{ fontSize: "22px", marginRight:"10px" }} as={Link} to="/">Home</Nav.Link>
             <Nav.Link style={{ fontSize: "22px", marginRight:"10px"  }} as={Link} to="/calender">Kalender</Nav.Link>

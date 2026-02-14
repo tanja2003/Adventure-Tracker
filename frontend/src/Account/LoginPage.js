@@ -75,8 +75,7 @@ export default function Login () {
               Bitte eine gültige E-Mail eingeben.
             </p>
             )}
-          </Form.Group>
-        
+          </Form.Group> 
 
           {/* Passwort */}
           <Form.Group className="mb-3">
@@ -102,10 +101,8 @@ export default function Login () {
             </Button>
           </div>
           <Button variant="link" onClick={() => navigate("/forgotpassword")}  className="w-full" style={{fontSize:"15px", marginLeft:"-10px"}}>Passwort vergessen?</Button>
-
         </Form>
-        </Card>
-        
+        </Card>   
     </div>
     )
 }

@@ -1,6 +1,6 @@
 const express = require('express');
 const eventsRouter = express.Router();
-const { db } = require('../db'); 
+const { db } = require('../database/db'); 
 
 
 eventsRouter.get('/', (req, res) => {

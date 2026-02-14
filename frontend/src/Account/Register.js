@@ -101,7 +101,7 @@ export default function Register(){
                             type="text"
                             placeholder="Max Mustermann"
                             value={name}
-                            onChange={(e) => setEmail(e.target.value)}/>
+                            onChange={(e) => setName(e.target.value)}/>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>E-Mail:</Form.Label>

@@ -1,39 +1,39 @@
-# Terminplanner 📅
+# Adventure Tracker
 
-A comprehensive appointment planning and task management web application with integrated calendar, todo list, and interactive map features.
+A comprehensive trip planning and task-management web application with integrated calendar, todo list, and interactive map features.
 
-## 📋 Overview
+## Overview
 
-Terminplanner is a full-stack web application designed to help users organize their daily tasks, schedule events, and mark important locations on an interactive map. The application provides a seamless user experience with authentication, personalized dashboards, and intuitive interfaces for managing appointments and todos.
+adventure-tracker is a full-stack web application designed to help users organize trips, manage tasks and appointments, and mark important locations on an interactive map. The application provides a seamless user experience with authentication, personalized dashboards, and intuitive interfaces for planning adventures and next-step todos.
 
-## ✨ Features
+## Features
 
-### 🔐 User Authentication
+### User Authentication
 - **User Registration**: Create new accounts with email and password
 - **Secure Login**: JWT-based authentication with bcrypt password hashing
 - **Password Reset**: Forgot password functionality with secure token-based reset
 - **Session Management**: 30-minute token expiration for security
 
-### ✅ Todo Management
+### Todo Management
 - **Create Todos**: Add tasks with title, description, and weather information
 - **Filter Todos**: View all, completed, or open todos
 - **Mark Complete**: Toggle task completion status
 - **Delete Todos**: Remove completed or unnecessary tasks
 
-### 📆 Event Calendar
+### Event Calendar
 - **Interactive Calendar**: Full calendar view with FullCalendar integration
 - **Create Events**: Schedule events with title, date, start time, and end time
 - **Day/Week/Month Views**: Multiple calendar view options
 - **Event Management**: Delete and manage scheduled events
 
-### 🗺️ Interactive Map
+### Interactive Map
 - **Place Markers**: Add custom markers on an interactive world map using Leaflet
 - **Image Upload**: Attach multiple images to markers (up to 10 per marker)
 - **Marker Details**: Add title and description to each location
 - **Edit Markers**: Update marker descriptions
 - **Bulk Operations**: Delete all markers or the most recent one
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React 19.1.1**: Modern UI library
@@ -57,85 +57,81 @@ Terminplanner is a full-stack web application designed to help users organize th
 - **CORS**: Cross-origin resource sharing
 - **dotenv**: Environment variable management
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-terminplanner/
-├── backend/
-│   ├── index.js           # Main server file
-│   ├── db.js              # Database configuration
-│   ├── authenticate.js    # JWT authentication middleware
-│   ├── routes/
-│   │   ├── todos.js       # Todo CRUD operations
-│   │   ├── events.js      # Event CRUD operations
-│   │   ├── markers.js     # Map marker operations
-│   │   └── account.js     # Account management
-│   ├── uploads/           # Uploaded images directory
-│   └── package.json
-├── frontend/
+adventure-tracker/
+├── backend/                        # Node/Express API
 │   ├── src/
+│   │   ├── server.js              # Entry point for the backend
+│   │   ├── database/
+│   │   │   └── db.js              # SQLite setup and schema
+│   │   ├── middlewares/
+│   │   │   └── authenticate.js    # JWT auth middleware
+│   │   ├── routes/                # Express routers
+│   │   │   ├── todos.js
+│   │   │   ├── events.js
+│   │   │   └── markers.js
+│   │   ├── controllers/           # (optional) business logic
+│   │   └── config/                # configuration helpers
+│   ├── uploads/                   # Static file storage
+│   └── package.json               # backend dependencies & scripts
+├── frontend/                       # React single‑page application
+│   ├── public/
+│   ├── src/
+│   │   ├── Account/
+│   │   ├── Design/
+│   │   ├── Modals/
+│   │   ├── Navigation/
 │   │   ├── pages/
-│   │   │   ├── HomePage.js     # Main dashboard
-│   │   │   ├── TodoPage.js     # Todo list view
-│   │   │   └── CalendarPage.js # Calendar view
-│   │   ├── Navigation/         # Navigation components
-│   │   ├── Account/            # Authentication components
-│   │   ├── Modals/             # Modal dialogs
-│   │   ├── Design/             # UI components
 │   │   ├── App.js
 │   │   └── index.js
 │   └── package.json
-├── planner.db             # SQLite database file
-└── README.md
+├── planner.db                      # SQLite database file (dev)
+└── README.md                       # this document
 ```
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- npm or yarn package manager
+- npm 8+ (workspaces support) or yarn
 
 ### Setup
 
 1. **Clone the repository**
    ```bash
    git clone https://github.com/tanja2003/terminplanner.git
-   cd terminplanner
+   cd adventure-tracker
    ```
 
-2. **Install root dependencies**
+2. **Install all dependencies**
+   The repo uses npm workspaces, so one command installs both backend and frontend packages:
    ```bash
-   npm install
+   npm run install-all   # or simply `npm install`
    ```
 
-3. **Setup Backend**
-   ```bash
-   cd backend
-   npm install
-   ```
-
-4. **Create environment file**
-   
-   Create a `.env` file in the `backend` directory:
+3. **Configure the backend**
+   Create a `.env` file inside `backend/` with at least:
    ```env
    JWT_SECRET=your_secret_key_here
    PORT=5000
    ```
 
-5. **Setup Frontend**
+4. **(Optional) Install individually**
    ```bash
-   cd ../frontend
-   npm install
+   cd backend && npm install
+   cd ../frontend && npm install
    ```
 
-## 🏃 Running the Application
+## Running the Application
 
 ### Start Backend Server
-```bash
-cd backend
-node index.js
 ```
-The server will run on `http://localhost:5000`
+cd backend
+npm run start          # or `npm run dev` with nodemon if installed
+```
+The server will run on `http://localhost:5000` (default port configurable via `.env`)
 
 ### Start Frontend Development Server
 ```bash
@@ -144,7 +140,7 @@ npm start
 ```
 The application will open at `http://localhost:3000`
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/register` - Register new user
@@ -172,7 +168,7 @@ The application will open at `http://localhost:3000`
 - `DELETE /api/markers` - Delete last marker
 - `DELETE /api/markers/all` - Delete all markers
 
-## 💾 Database Schema
+## Database Schema
 
 ### Tables
 - **account**: User accounts (id, name, email, password, resetToken, resetTokenExpire)
@@ -181,7 +177,7 @@ The application will open at `http://localhost:3000`
 - **markers**: Map markers (id, account_id, lat, lng, title, description)
 - **marker_images**: Images for markers (id, marker_id, image_url)
 
-## 🎨 Features in Detail
+## Features in Detail
 
 ### Todo List
 - Weather-aware task planning
@@ -202,8 +198,7 @@ The application will open at `http://localhost:3000`
 - Persistent marker storage
 - Visual location tracking
 
-## 🔒 Security Features
-
+## Security Features
 - Password hashing with bcrypt (10 rounds)
 - JWT token-based authentication
 - Token expiration (30 minutes)
@@ -212,22 +207,6 @@ The application will open at `http://localhost:3000`
 - SQL injection prevention with parameterized queries
 - CORS enabled for secure cross-origin requests
 
-## 📝 License
-
-This project is open source and available for educational purposes.
 
 ## 👥 Author
-
 Created by [tanja2003](https://github.com/tanja2003)
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
-
-## 📧 Support
-
-For support, please open an issue in the GitHub repository.
-
----
-
-**Built with ❤️ using React and Node.js**
