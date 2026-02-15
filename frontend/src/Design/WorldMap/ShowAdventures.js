@@ -39,7 +39,7 @@ export default function ShowAdventures({markers, setMarkers, setLightboxImage}){
                 marginBottom: "40px",padding: "20px", backgroundColor: "#fff",
                 borderRadius: "16px", boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", alignItems: "start",
             }}>
-                {/* Linke Spalte – Text + Aktionen */}
+                {/* Left column – text + actions */}
                 <div
                     style={{ display: "flex", flexDirection: "column",
                     gap: "14px", justifyContent: "flex-start",
@@ -57,7 +57,7 @@ export default function ShowAdventures({markers, setMarkers, setLightboxImage}){
                     <Pencil size={18} color="#555" />
                 </div>
 
-                {/* Eingabefeld nur anzeigen, wenn Button geklickt */}
+                {/* Only show input field when button is clicked*/}
                 {showInputBox === idx && (
                     <>
                     <input 
@@ -90,7 +90,7 @@ export default function ShowAdventures({markers, setMarkers, setLightboxImage}){
                 )}
                 </div>
 
-                {/* Rechte Spalte – Bild */}
+                {/* Right column – image*/}
                 <div style={{ position:"relative", marginLeft: "calc(0%)",   width: "65vw", overflow: "hidden", alignSelf: "stretch" }}>
                 {marker.images[0] ? (
                     <div style={{ display: "flex", overflowX: "auto", scrollBehavior: "smooth",

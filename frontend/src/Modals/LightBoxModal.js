@@ -2,7 +2,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 
 export default function LightboxModal({ src, onClose }) {
-  if (!src) return null; // nichts rendern, wenn kein Bild
+  if (!src) return null;
 
   return (
     <Modal show={true} onHide={onClose} centered>

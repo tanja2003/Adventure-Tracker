@@ -163,7 +163,6 @@ export default function WorldMapPlanner() {
             setMarkers={setMarkers}
             setLightboxImage={setLightboxImage}>
           </LayersControlMarker>
-          {/* OSM-Kachel-Layer (benötigt Internet; für Offline siehe Hinweise unten) */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> Mitwirkende'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

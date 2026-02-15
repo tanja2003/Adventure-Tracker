@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button, Card, Form, ToggleButton } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../Design/BackButton";
-import DatenschutzCheckbox from "../Design/Datenschutz";
+import DatenschutzCheckbox from "../Design/DataProtection";
 
 
 export default function Register(){

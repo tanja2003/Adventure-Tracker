@@ -86,8 +86,8 @@ export default function CalendarPage() {
   };
 
   const handleDateClick = (info) => {
-    setClickedDate(info.dateStr);   // remember date
-    setShowModal(true);             // open Modal
+    setClickedDate(info.dateStr);  
+    setShowModal(true);             
   };
 
   const handleSaveEvent = (newEvent) => {
@@ -114,7 +114,7 @@ export default function CalendarPage() {
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"   // Start = Wochenansicht
+        initialView="timeGridWeek"   
         headerToolbar={{
           left: "prev,next today",
           center: "title",

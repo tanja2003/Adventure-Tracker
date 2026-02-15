@@ -2,8 +2,6 @@ import BackButton from "../Design/BackButton";
 
 
 export default function ChangePassword(){
-
-
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50">
             <div className="bg-gray-400 p-8 rounded-lg w-full max-w-md shadow-lg" 

@@ -9,7 +9,7 @@ export default function LogoutModal ()  {
     const {logout} = useAuth();
 
     const confirmLogout = () => {
-        logout(navigate("/login"));  // zentraler Logout
+        logout(navigate("/login"));  
     };
 
     const cancelLogout = () => {
@@ -25,13 +25,9 @@ export default function LogoutModal ()  {
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <Button variant='success' style={{ marginRight: "auto"}} onClick={confirmLogout}>Ja</Button>
                     <Button variant="danger" style={{ marginLeft: "auto"}}  onClick={cancelLogout}>Nein</Button>
-                    </div>
-                    
+                    </div>                   
                 </div>
             </Card>
-            
-
         </div>
-
     );
 }

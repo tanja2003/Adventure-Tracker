@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import { logout } from "./auth"; // <--- deine zentrale Logout Funktion
+import { logout } from "./auth"; 
 
-const useAutoLogout = (timeout = 300000) => { // 5 Minuten
+const useAutoLogout = (timeout = 300000) => { // 5 minutes
     const [timer, setTimer] = useState(null);
 
     const resetTimer = () => {
         clearTimeout(timer);
-        setTimer(setTimeout(() => logout(), timeout)); // <-- hier wird dein normales logout() ausgeführt
+        setTimer(setTimeout(() => logout(), timeout));
     };
 
     useEffect(() => {
-        resetTimer(); // Timer direkt starten
+        resetTimer(); 
 
         window.addEventListener('mousemove', resetTimer);
         window.addEventListener('keydown', resetTimer);

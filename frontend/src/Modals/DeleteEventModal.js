@@ -5,7 +5,7 @@ export default function DeleteEventModal ({show, onClose, onConfirm, selectedEve
         <div>
             <Modal show={show} onHide={onClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Termin loschen oder hinzufügen</Modal.Title>
+                    <Modal.Title>Termin löschen oder hinzufügen</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Button variant="danger" className="me-2"

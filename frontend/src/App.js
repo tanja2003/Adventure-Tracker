@@ -1,8 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
-
-import Navbar1 from "./Navigation/Navigation";
 import TodoPage from "./pages/TodoPage";
 import CalenderPage from "./pages/CalenderPage";
 import Login from "./Account/LoginPage";
@@ -58,5 +56,4 @@ function App() {
     
   );
 }
-
 export default App;

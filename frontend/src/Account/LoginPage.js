@@ -77,7 +77,7 @@ export default function Login () {
             )}
           </Form.Group> 
 
-          {/* Passwort */}
+          {/* Password */}
           <Form.Group className="mb-3">
             <Form.Label>Passwort</Form.Label>
             <Form.Control
