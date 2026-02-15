@@ -9,5 +9,10 @@
   "scripts": {
     "install-all": "npm install --workspaces",
     "start": "npm run start --workspace=backend & npm run start --workspace=frontend"
+  },
+  "dependencies": {
+    "bootstrap-icons": "^1.13.1",
+    "jwt-decode": "^4.0.0",
+    "react-bootstrap-icons": "^1.11.6"
   }
 }
