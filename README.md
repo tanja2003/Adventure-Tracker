@@ -101,7 +101,7 @@ adventure-tracker/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/tanja2003/terminplanner.git
+   git clone https://github.com/tanja2003/Adventure-Tracker
    cd adventure-tracker
    ```
 
