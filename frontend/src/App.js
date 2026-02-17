@@ -16,6 +16,7 @@ import ChangePassword from "./Account/ChangePassword";
 import ForgotPassword from "./Account/ForgotPassword";
 import ResetPage from "./Account/ResetPasswordPage";
 
+const ProfilePage = () => <div className="font-bold" style={{ fontSize:"22px", margin:20}}>not yet implemented</div>;
 
 function App() {
   //useAutoLogout(300000);
@@ -48,6 +49,11 @@ function App() {
           <Route path="/logout" element={
               <ProtectedRoute>
                 <LogoutModal />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             } />
         </Routes>
